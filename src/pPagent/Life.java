@@ -43,7 +43,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	int mouseButton;
 
 	// font for displaying data
-	Font font = new Font("Courier", Font.PLAIN, 12);
+	Font font = new Font("Courier", Font.BOLD, 35);
 	// best creature/carnivore
 	Creature bestC = new Creature();
 	Carnivore bestCa = new Carnivore();
@@ -54,18 +54,73 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	boolean sightCircle = false;
 
 	public static void main(String[] args) {
+		getConfig();
 		new Life();
 	}
 
 	// default constructor
 	public Life() {
+		
 		super("Life_2.0");
+		
 		setSize(900, 632); // 32 is for JFrame top bar
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gameloop = new Thread(this);
 		gameloop.start();
 		init();
+	}
+	private static Object lock = new Object();
+	public static void getConfig(){
+		
+		//1. Create the frame.
+		JFrame frame = new JFrame("FrameDemo");
+		JPanel panel = new JPanel();
+		JButton b1 = new JButton("Disable middle button");
+		JTextField f_carnivores = new JTextField("Carnivores",3);
+		JTextField f_creatures  = new JTextField("Creatures",3);
+		JTextField f_grass      = new JTextField("Grass",4);
+		
+		b1.addActionListener(new ActionListener()
+		{
+			  public void actionPerformed(ActionEvent e)
+			  {
+				  
+				  try {
+					  synchronized(lock) {
+						  lock.notify();
+						  
+					  }
+				  } catch (Exception ex){}
+			   
+			  }
+			});
+		
+		//2. Optional: What happens when the frame closes?
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//3. Create components and put them in the frame.
+		//...create emptyLabel...
+		panel.add(f_carnivores, BorderLayout.AFTER_LAST_LINE);
+		panel.add(f_creatures, BorderLayout.AFTER_LAST_LINE);
+		panel.add(f_grass, BorderLayout.AFTER_LAST_LINE);
+		frame.getContentPane().add(panel, BorderLayout.PAGE_END);
+		frame.getContentPane().add(b1, BorderLayout.PAGE_START);
+
+		//4. Size the frame.
+		frame.pack();
+
+		//5. Show it.
+		frame.setVisible(true);
+		try {
+			synchronized (lock) {
+				lock.wait();
+				frame.dispose();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block	
+		}
+		
 	}
 
 	// application init event
@@ -131,7 +186,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		drawCreatures();
 		drawCarnivores();
 		if (!photonDraw) {
-			drawPhotons();
+			drawGrass();
 		}
 		if(data){
 			printData();
@@ -182,12 +237,10 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		}
 	}
 
-	// drawPhotons called by update
-	public void drawPhotons() {
+	public void drawGrass() {
 		for (int n = 0; n < grass.size(); n++) {
 			Grass p = grass.get(n);
 			if (p.isAlive()) {
-				// draw the photon
 				g2d.setTransform(identity);
 				g2d.translate(p.getX(), p.getY());
 				g2d.setColor(new Color(0, 100, 0));
@@ -219,9 +272,9 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		g2d.setFont(font);
 		// populations
 		g2d.translate(0, 30);
-		g2d.drawString("/n/n/nCreatures: " + creature.size(), 5, 0);
-		g2d.drawString("Carnivores: " + carnivore.size(), 5, 15);
-		g2d.drawString("Photons: " + grass.size(), 5, 30);
+		g2d.drawString("Creatures: " + creature.size(), 5, 30);
+		g2d.drawString("Carnivores: " + carnivore.size(), 5, 60);
+		g2d.drawString("Photons: " + grass.size(), 5, 90);
 		
 	}
 
@@ -720,6 +773,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
