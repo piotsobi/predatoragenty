@@ -118,8 +118,9 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	public void paint(Graphics g) {
 		// draw the backbuffer to the window
 		g.drawImage(backbuffer, 0, 29, this);
+		//g.drawima
 		// start off transforms at identity
-
+		//g2d = (Graphics2D) g;
 		g2d.setTransform(identity);
 		// erase the background
 		g2d.setColor(Color.BLACK);
@@ -131,6 +132,9 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		drawCarnivores();
 		if (!photonDraw) {
 			drawPhotons();
+		}
+		if(data){
+			printData();
 		}
 	}
 
@@ -215,53 +219,10 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		g2d.setFont(font);
 		// populations
 		g2d.translate(0, 30);
-		g2d.drawString("Creatures: " + creature.size(), 5, 0);
+		g2d.drawString("/n/n/nCreatures: " + creature.size(), 5, 0);
 		g2d.drawString("Carnivores: " + carnivore.size(), 5, 15);
 		g2d.drawString("Photons: " + grass.size(), 5, 30);
-		// best creature
-		g2d.translate(0, 60);
-		g2d.drawString("Best Creature:", 5, 0);
-		g2d.drawString("Position: " + bestC.getX() + ", " + bestC.getY(), 5, 15);
-		// g2d.drawString("MutatedShapeCheck: "+bestC.getMutatedShapeCheck(), 5,
-		// 30);
-		g2d.drawString("Sight: " + bestC.getSi(), 5, 45);
-		g2d.drawString("speed: " + bestC.getSp(), 5, 60);
-		g2d.drawString("Up/Down Bias: " + bestC.getudB(), 5, 75);
-		g2d.drawString("Left/Right Bias: " + bestC.getlrB(), 5, 90);
-		// g2d.drawString("Number of Mutations: "+bestC.getMutateNum(), 5, 105);
-		// draw best creature
-		g2d.translate(50, 150);
-		int[] x1 = new int[8];
-		int[] y1 = new int[8];
-		for (int n = 0; n < bestC.getCrX().length; n++) {
-			x1[n] = bestC.getCrX()[n] * 4;
-			y1[n] = bestC.getCrY()[n] * 4;
-		}
-		Polygon bigC = new Polygon(x1, y1, 8);
-		g2d.draw(bigC);
-		// best carnivore
-		g2d.translate(-50, 80);
-		g2d.drawString("Best Carnivore:", 5, 0);
-		g2d.drawString("Position: " + bestCa.getX() + ", " + bestCa.getY(), 5,
-				15);
-		// g2d.drawString("MutatedShapeCheck: "+bestCa.getMutatedShapeCheck(),
-		// 5, 30);
-		g2d.drawString("Sight: " + bestCa.getSi(), 5, 45);
-		g2d.drawString("speed: " + bestCa.getSp(), 5, 60);
-		g2d.drawString("Up/Down Bias: " + bestCa.getudB(), 5, 75);
-		g2d.drawString("Left/Right Bias: " + bestCa.getlrB(), 5, 90);
-		// g2d.drawString("Number of Mutations: "+bestCa.getMutateNum(), 5,
-		// 105);
-		// draw best carnivore
-		g2d.translate(50, 150);
-		int[] x2 = new int[8];
-		int[] y2 = new int[8];
-		for (int n = 0; n < bestCa.getCrX().length; n++) {
-			x2[n] = bestCa.getCrX()[n] * 4;
-			y2[n] = bestCa.getCrY()[n] * 4;
-		}
-		Polygon bigCa = new Polygon(x2, y2, 8);
-		g2d.draw(bigCa);
+		
 	}
 
 	public void run() {
@@ -728,6 +689,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		case KeyEvent.VK_S:
 			sightCircle = !sightCircle;
 			break;
+		case KeyEvent.VK_D:
+			data = !data;
 		}
 	}
 
