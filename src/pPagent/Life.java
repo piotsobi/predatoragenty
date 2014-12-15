@@ -6,7 +6,7 @@ import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.*;
 import java.util.List;
-
+import org.math.plot.*;
 import javax.swing.*;
 
 public class Life extends JFrame implements Runnable, MouseListener,
@@ -20,16 +20,28 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	int width = 900;
 	int height = 600;
-
-	int CREATURES = 50;
+	
+	ArrayList<Double> arrayx;
+	ArrayList<Double> arrayy;
+	ArrayList<Double> arraytime;
+	Object[] object;
+	double[] x;
+	double[] y;
+	double[] time;
+	int pl = 0;
+	
+	static int czcr;
+	static int czca;
+	
+	static int CREATURES;
 	List<Creature> creature = Collections
 			.synchronizedList(new ArrayList<Creature>());
 
-	int CARNIVORES = 8;
+	static int CARNIVORES;
 	List<Carnivore> carnivore = Collections
 			.synchronizedList(new ArrayList<Carnivore>());
 
-	int GRASS = 2000;
+	static int GRASS;
 	List<Grass> grass = Collections.synchronizedList(new ArrayList<Grass>());
 
 	AffineTransform identity = new AffineTransform();
@@ -44,14 +56,19 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	// font for displaying data
 	Font font = new Font("Courier", Font.BOLD, 35);
-	// best creature/carnivore
-	Creature bestC = new Creature();
-	Carnivore bestCa = new Carnivore();
+	
 
 	// toggles
 	boolean data = false;
 	boolean photonDraw = false;
 	boolean sightCircle = false;
+	
+	//plot
+	Plot2DPanel plot = new Plot2DPanel() {
+		public Dimension getPreferredSize() {
+            return new Dimension(1000, 800);
+        }
+	};
 
 	public static void main(String[] args) {
 		getConfig();
@@ -62,7 +79,10 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	public Life() {
 		
 		super("Life_2.0");
-		
+		arrayx = new ArrayList<Double>();
+		arrayy = new ArrayList<Double>();
+		arraytime = new ArrayList<Double>();
+		System.out.println("carn" + CARNIVORES);
 		setSize(900, 632); // 32 is for JFrame top bar
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,15 +96,23 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		//1. Create the frame.
 		JFrame frame = new JFrame("FrameDemo");
 		JPanel panel = new JPanel();
-		JButton b1 = new JButton("Disable middle button");
-		JTextField f_carnivores = new JTextField("Carnivores",3);
-		JTextField f_creatures  = new JTextField("Creatures",3);
-		JTextField f_grass      = new JTextField("Grass",4);
+		JButton b1 = new JButton("Set config");
+		final JTextField f_carnivores = new JTextField("Predator",5);
+		final JTextField f_creatures  = new JTextField("Prey",5);
+		final JTextField f_timelifecr   = new JTextField("Energia",5);
+		final JTextField f_grass      = new JTextField("Grass",5);
+		final JTextField f_timelifeca   = new JTextField("Energia",5);
+		
 		
 		b1.addActionListener(new ActionListener()
 		{
 			  public void actionPerformed(ActionEvent e)
 			  {
+				  CREATURES = Integer.parseInt(f_creatures.getText().toString());
+					CARNIVORES = Integer.parseInt(f_carnivores.getText().toString());
+					GRASS = Integer.parseInt(f_grass.getText().toString());
+					czcr = Integer.parseInt(f_timelifecr.getText().toString());
+					czca = Integer.parseInt(f_timelifeca.getText().toString());
 				  
 				  try {
 					  synchronized(lock) {
@@ -102,11 +130,16 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		//3. Create components and put them in the frame.
 		//...create emptyLabel...
 		panel.add(f_carnivores, BorderLayout.AFTER_LAST_LINE);
+		panel.add(f_timelifecr,BorderLayout.AFTER_LAST_LINE);
 		panel.add(f_creatures, BorderLayout.AFTER_LAST_LINE);
+		panel.add(f_timelifeca,BorderLayout.AFTER_LAST_LINE);
 		panel.add(f_grass, BorderLayout.AFTER_LAST_LINE);
+		
+		frame.setPreferredSize(new Dimension(500,300));
 		frame.getContentPane().add(panel, BorderLayout.PAGE_END);
 		frame.getContentPane().add(b1, BorderLayout.PAGE_START);
-
+		
+		
 		//4. Size the frame.
 		frame.pack();
 
@@ -133,7 +166,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			c.setY(rand.nextInt(600));
 			c.setAlive(true);
 			c.setSight(10);
-			c.setEnergy(150);
+			c.setEnergy(czca);
 			creature.add(c);
 		}
 		for (int n = 0; n < CARNIVORES; n++) {
@@ -145,7 +178,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			c.setSpeed(1);
 			c.setSp(2);
 			c.setSi(width / 4);
-			c.setEnergy(150);
+			c.setEnergy(czcr);
 			// c.setDebug(true);
 			carnivore.add(c);
 		}
@@ -303,6 +336,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	// move and animate objects in the game
 	public void gameUpdate() {
 		// updateGrass();
+		
 		updateCreatures();
 		updateCarnivores();
 		checkCollisions();
@@ -310,6 +344,12 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		spawnGrass();
 		spawnCreatureCheck();
 		resetCheck();
+		//x[dataNum] = creature.size();
+		//y[dataNum] = carnivore.size();
+		//time[dataNum] = dataNum;
+		arrayx.add((double) creature.size());
+		arrayy.add((double) carnivore.size());
+		arraytime.add((double) dataNum);
 		dataNum++;
 	}
 
@@ -320,6 +360,12 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	 * } }
 	 */
 
+	public void plotthat(double[] x, double[] y, int i, String name){
+		if (i==1) plot.addLinePlot(name, x, y);
+		if (i==2) plot.addLinePlot(name, x, y);
+		System.out.println("Odpalono mnie");
+		
+	}
 	public void updateCreatures() {
 		double targetX = 0;
 		double targetY = 0;
@@ -676,6 +722,30 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	// restart
 	public void resetCheck() {
+		
+		if ((creature.size() == 0 || carnivore.size() == 0) && pl==0){
+			
+			x = new double[arrayx.size()];
+			y = new double[arrayy.size()];
+			time = new double[arraytime.size()];
+			
+			for( int i=0; i<arrayy.size(); i++){
+				x[i] = arrayx.get(i);
+				y[i] = arrayy.get(i);
+				time[i] = arraytime.get(i);
+			}
+			
+			
+			plotthat(time,x,1,"Creature");
+			plotthat(time,y,2,"Carnivore");
+			pl = 1;
+			JFrame frame = new JFrame("Prey predator");
+			frame.setContentPane(plot);
+			frame.setPreferredSize(new Dimension(1000,700));
+			frame.setSize(new Dimension(1000,700));
+			frame.setVisible(true);
+		}
+		
 		if (creature.size() == 0 && carnivore.size() == 0) {
 			init();
 		}
@@ -780,5 +850,31 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	
+	
+	
+	
+	//boids 
+	
+	public ArrayList<Creature> neighborhood(Creature i){
+		ArrayList<Creature> creatureset = new ArrayList<Creature>();
+		
+		
+		double x = i.getX();
+		double y = i.getY();
+		double si = i.getSight();
+		double ref = Math.floor(2*si);
+		
+		for(int a=0; a<creature.size(); a++){
+			double z = creature.get(a).getX();
+			double zy = creature.get(a).getY();
+			if((z>x-ref && z<x+ref) || (zy>y-ref && zy<y+ref)){
+				if (z!=x && zy!=y) creatureset.add(creature.get(a));
+			}
+		}
+		
+		return creatureset;
 	}
 }
