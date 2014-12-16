@@ -3,7 +3,7 @@ package pPagent;
 import java.awt.*;
 
 
-public class Creature extends BaseVectorShape {
+public class Prey extends BaseModel {
 
 	private int xRef;
 	private int yRef;
@@ -67,7 +67,7 @@ public class Creature extends BaseVectorShape {
 	}
 	
 	
-	Creature() {
+	Prey() {
 		
 		
 		setShape(new Polygon(crX, crY, crX.length));

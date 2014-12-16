@@ -9,7 +9,7 @@ import java.util.List;
 import org.math.plot.*;
 import javax.swing.*;
 
-public class Life extends JFrame implements Runnable, MouseListener,
+public class Main extends JFrame implements Runnable, MouseListener,
 		KeyListener {
 
 	// petla glowna
@@ -33,13 +33,11 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	static int czcr;
 	static int czca;
 	
-	static int CREATURES;
-	List<Creature> creature = Collections
-			.synchronizedList(new ArrayList<Creature>());
+	static int PREYS;
+	List<Prey> prey = Collections.synchronizedList(new ArrayList<Prey>());
 
-	static int CARNIVORES;
-	List<Carnivore> carnivore = Collections
-			.synchronizedList(new ArrayList<Carnivore>());
+	static int PREDATORS;
+	List<Predator> predator = Collections.synchronizedList(new ArrayList<Predator>());
 
 	static int GRASS;
 	List<Grass> grass = Collections.synchronizedList(new ArrayList<Grass>());
@@ -72,17 +70,17 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	public static void main(String[] args) {
 		getConfig();
-		new Life();
+		new Main();
 	}
 
 	// default constructor
-	public Life() {
+	public Main() {
 		
 		super("Life_2.0");
 		arrayx = new ArrayList<Double>();
 		arrayy = new ArrayList<Double>();
 		arraytime = new ArrayList<Double>();
-		System.out.println("carn" + CARNIVORES);
+		System.out.println("carn" + PREDATORS);
 		setSize(900, 632); // 32 is for JFrame top bar
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,8 +106,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		{
 			  public void actionPerformed(ActionEvent e)
 			  {
-				  CREATURES = Integer.parseInt(f_creatures.getText().toString());
-					CARNIVORES = Integer.parseInt(f_carnivores.getText().toString());
+				  PREYS = Integer.parseInt(f_creatures.getText().toString());
+					PREDATORS = Integer.parseInt(f_carnivores.getText().toString());
 					GRASS = Integer.parseInt(f_grass.getText().toString());
 					czcr = Integer.parseInt(f_timelifecr.getText().toString());
 					czca = Integer.parseInt(f_timelifeca.getText().toString());
@@ -159,18 +157,18 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	// application init event
 	public void init() {
 
-		for (int n = 0; n < CREATURES; n++) {
-			Creature c = new Creature();
+		for (int n = 0; n < PREYS; n++) {
+			Prey c = new Prey();
 			// set up creature variables
 			c.setX(rand.nextInt(906) + 5); // separates them nicely
 			c.setY(rand.nextInt(600));
 			c.setAlive(true);
 			c.setSight(10);
 			c.setEnergy(czca);
-			creature.add(c);
+			prey.add(c);
 		}
-		for (int n = 0; n < CARNIVORES; n++) {
-			Carnivore c = new Carnivore();
+		for (int n = 0; n < PREDATORS; n++) {
+			Predator c = new Predator();
 			// set up creature variables
 			c.setX(rand.nextInt(906) + 5); // separates them nicely
 			c.setY(rand.nextInt(600));
@@ -180,7 +178,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			c.setSi(width / 4);
 			c.setEnergy(czcr);
 			// c.setDebug(true);
-			carnivore.add(c);
+			predator.add(c);
 		}
 		for (int n = 0; n < GRASS; n++) {
 			Grass p = new Grass();
@@ -228,8 +226,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	// drawCreatures called by update
 	public void drawCreatures() {
-		for (int n = 0; n < creature.size(); n++) {
-			Creature c = creature.get(n);
+		for (int n = 0; n < prey.size(); n++) {
+			Prey c = prey.get(n);
 			if (c.isAlive()) {
 				// draw the creature
 				g2d.setTransform(identity);
@@ -249,9 +247,9 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	// drawCarnivores called by update
 	public void drawCarnivores() {
-		if (carnivore.size() > 0) {
-			for (int n = 0; n < carnivore.size(); n++) {
-				Carnivore ca = carnivore.get(n);
+		if (predator.size() > 0) {
+			for (int n = 0; n < predator.size(); n++) {
+				Predator ca = predator.get(n);
 				if (ca.isAlive()) {
 					// draw the carnivore
 					g2d.setTransform(identity);
@@ -290,14 +288,14 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		g2d.setFont(font);
 		// creature/carnivore ratio bar
 		g2d.setColor(new Color(1, 1, 1, 0.5f));
-		Rectangle2D white = new Rectangle2D.Double(0, 0, creature.size()
-				* (200 / (creature.size() + carnivore.size())), 20);
+		Rectangle2D white = new Rectangle2D.Double(0, 0, prey.size()
+				* (200 / (prey.size() + predator.size())), 20);
 		g2d.fill(white);
 		g2d.setColor(new Color(1, 0, 0, 0.5f));
 		Rectangle2D red = new Rectangle2D.Double(
-				creature.size() * (200 / (creature.size() + carnivore.size())),
+				prey.size() * (200 / (prey.size() + predator.size())),
 				0,
-				carnivore.size() * (200 / (creature.size() + carnivore.size())),
+				predator.size() * (200 / (prey.size() + predator.size())),
 				20);
 		g2d.fill(red);
 		// set font
@@ -305,8 +303,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		g2d.setFont(font);
 		// populations
 		g2d.translate(0, 30);
-		g2d.drawString("Creatures: " + creature.size(), 5, 30);
-		g2d.drawString("Carnivores: " + carnivore.size(), 5, 60);
+		g2d.drawString("Creatures: " + prey.size(), 5, 30);
+		g2d.drawString("Carnivores: " + predator.size(), 5, 60);
 		g2d.drawString("Photons: " + grass.size(), 5, 90);
 		
 	}
@@ -347,8 +345,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		//x[dataNum] = creature.size();
 		//y[dataNum] = carnivore.size();
 		//time[dataNum] = dataNum;
-		arrayx.add((double) creature.size());
-		arrayy.add((double) carnivore.size());
+		arrayx.add((double) prey.size());
+		arrayy.add((double) predator.size());
 		arraytime.add((double) dataNum);
 		dataNum++;
 	}
@@ -373,8 +371,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		Grass g = null;
 		int otherwise = 0;
 
-		for (int n = 0; n < creature.size(); n++) {
-			Creature c = creature.get(n);
+		for (int n = 0; n < prey.size(); n++) {
+			Prey c = prey.get(n);
 			if (c.isAlive()) {
 				double best = c.getSi();
 				if (rand.nextInt(4) <= 2 || c.isDebug()) {
@@ -438,14 +436,14 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	public void updateCarnivores() {
 		double targetX = 0;
 		double targetY = 0;
-		for (int i = 0; i < carnivore.size(); i++) {
-			Carnivore ca = carnivore.get(i);
+		for (int i = 0; i < predator.size(); i++) {
+			Predator ca = predator.get(i);
 			// nie zawsze poluje
-			if (rand.nextInt(4) <= 2) {
+			if (rand.nextInt(8) <= 2) {
 				double best = ca.getSi();
 				int otherwise = 0;
-				for (int j = 0; j < creature.size(); j++) {
-					Creature c = creature.get(j);
+				for (int j = 0; j < prey.size(); j++) {
+					Prey c = prey.get(j);
 					double distance = getDistance(ca, c);
 					if (distance < best) {
 						ca.setXRef(calcRef(ca.getX(), c.getX(), width));
@@ -457,7 +455,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 						otherwise++;
 					}
 				}
-				if (otherwise < creature.size()) {
+				if (otherwise < prey.size()) {
 					if (Math.abs(ca.getX() - targetX) >= 3) {
 						ca.incX(ca.getXRef() * ca.getSp());
 					}
@@ -491,7 +489,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		}
 	}
 
-	public void randomMove(Carnivore ca) {
+	public void randomMove(Predator ca) {
 		if (rand.nextInt(31) + 1 < 9 + ca.getudB()) {
 			ca.incY(ca.getSp());
 		} else if (rand.nextInt(31) + 1 > 20 + ca.getudB()) {
@@ -516,22 +514,22 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		}
 	}
 
-	public void randomMove(Creature ca) {
+	public void randomMove(Prey ca) {
 		if (rand.nextInt(31) + 1 < 9 + ca.getudB()) {
 			ca.incY(ca.getSp());
-		} else if (rand.nextInt(31) + 1 > 20 + ca.getudB()) {
+		} else if (rand.nextInt(31) + 1 > 12 + ca.getudB()) {
 			ca.incY(-ca.getSp());
 		} else {
-			if (rand.nextInt(2) + 1 <= 1) {
+			if (rand.nextInt(2) + 2 <= 2) {
 				ca.incX(ca.getSp());
 			} else {
 				ca.incX(-ca.getSp());
 			}
 		}
 		if (rand.nextInt(31) + 1 < 9 + ca.getlrB()) {
-			ca.incX(ca.getSpeed());
-		} else if (rand.nextInt(31) + 1 > 20 + ca.getlrB()) {
-			ca.incX(-ca.getSpeed());
+			ca.incY(ca.getSpeed());
+		} else if (rand.nextInt(31) + 1 > 12 + ca.getlrB()) {
+			ca.incY(-ca.getSpeed());
 		} else {
 			if (rand.nextInt(2) + 1 <= 1) {
 				ca.incX(ca.getSpeed());
@@ -542,7 +540,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	}
 
 	// odl miedzy
-	public double getDistance(Carnivore ca, Creature c) {
+	public double getDistance(Predator ca, Prey c) {
 		double xSeparation = Math.abs(ca.getX() - c.getX());
 		double ySeparation = Math.abs(ca.getY() - c.getY());
 		if (Math.abs(ca.getX() - c.getX()) > width / 2) {
@@ -556,7 +554,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		return totalSeparation;
 	}
 
-	public double getDistance(Creature ca, Grass c) {
+	public double getDistance(Prey ca, Grass c) {
 		double xSeparation = Math.abs(ca.getX() - c.getX());
 		double ySeparation = Math.abs(ca.getY() - c.getY());
 		// look through walls
@@ -587,10 +585,10 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	// check collisions
 	public void checkCollisions() {
 		// creatures vs photons
-		synchronized (creature) {
-			Iterator<Creature> it = creature.iterator();
+		synchronized (prey) {
+			Iterator<Prey> it = prey.iterator();
 			while (it.hasNext()) {
-				Creature c = (Creature) it.next();
+				Prey c = (Prey) it.next();
 				if (c.isAlive()) {
 					synchronized (grass) {
 						Iterator<Grass> itToo = grass.iterator();
@@ -612,20 +610,20 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			}
 		}
 		// carnivores vs creatures
-		synchronized (carnivore) {
-			Iterator<Carnivore> carn = carnivore.iterator();
+		synchronized (predator) {
+			Iterator<Predator> carn = predator.iterator();
 			while (carn.hasNext()) {
-				Carnivore ca = (Carnivore) carn.next();
+				Predator ca = (Predator) carn.next();
 				if (ca.isAlive()) {
-					synchronized (creature) {
-						Iterator<Creature> prey = creature.iterator();
-						while (prey.hasNext()) {
-							Creature cr = (Creature) prey.next();
+					synchronized (prey) {
+						Iterator<Prey> crea = prey.iterator();
+						while (crea.hasNext()) {
+							Prey cr = (Prey) crea.next();
 							if (cr.isAlive()) {
 								if (ca.getBounds().intersects(cr.getBounds())) {
 									cr.setAlive(false);
 									ca.incEnergy(cr.getEnergy());
-									prey.remove();
+									crea.remove();
 								}
 							}
 						}
@@ -636,19 +634,19 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	}
 
 	public void deadCollect() {
-		synchronized (creature) {
-			Iterator<Creature> it = creature.iterator();
+		synchronized (prey) {
+			Iterator<Prey> it = prey.iterator();
 			while (it.hasNext()) {
-				Creature c = (Creature) it.next();
+				Prey c = (Prey) it.next();
 				if (!c.isAlive()) {
 					it.remove();
 				}
 			}
 		}
-		synchronized (carnivore) {
-			Iterator<Carnivore> itToo = carnivore.iterator();
+		synchronized (predator) {
+			Iterator<Predator> itToo = predator.iterator();
 			while (itToo.hasNext()) {
-				Carnivore ca = (Carnivore) itToo.next();
+				Predator ca = (Predator) itToo.next();
 				if (!ca.isAlive()) {
 					itToo.remove();
 				}
@@ -658,7 +656,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 
 	public void spawnGrass() {
 		double r = ((Math.sin(Math.toRadians(dataNum / 5))) + 3) * 9;
-		if (grass.size() < 1500) {
+		if (grass.size() < 2000) {
 			for (int n = 0; n < r; n++) {
 				Grass p = new Grass();
 				p.setX(rand.nextInt(width));
@@ -671,23 +669,23 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	}
 
 	public void spawnCreatureCheck() {
-		for (int n = 0; n < creature.size(); n++) {
-			Creature c = creature.get(n);
-			if (c.getEnergy() > 250) {
+		for (int n = 0; n < prey.size(); n++) {
+			Prey c = prey.get(n);
+			if (c.getEnergy() > czca+300) {
 				spawnChild(c);
 			}
 		}
-		for (int n = 0; n < carnivore.size(); n++) {
-			Carnivore ca = carnivore.get(n);
-			if (ca.getEnergy() > 300) {
+		for (int n = 0; n < predator.size(); n++) {
+			Predator ca = predator.get(n);
+			if (ca.getEnergy() > czcr+400) {
 				spawnChild(ca);
 			}
 		}
 	}
 
-	public void spawnChild(Creature c_) {
+	public void spawnChild(Prey c_) {
 
-		Creature c = new Creature();
+		Prey c = new Prey();
 		c.setX(c_.getX() + 1);
 		c.setY(c_.getY() + 1);
 		c.setAlive(true);
@@ -697,12 +695,12 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		c.setShape(c_.getShape());
 		c.setlrB(c_.getlrB());
 		c.setudB(c_.getudB());
-		creature.add(c);
+		prey.add(c);
 		c_.setEnergy(150);
 	}
 
-	public void spawnChild(Carnivore ca_) {
-		Carnivore ca = new Carnivore();
+	public void spawnChild(Predator ca_) {
+		Predator ca = new Predator();
 
 		ca.setX(ca_.getX() + 1);
 		ca.setY(ca_.getY() + 1);
@@ -715,7 +713,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		ca.setlrB(ca_.getlrB());
 		ca.setudB(ca_.getudB());
 
-		carnivore.add(ca);
+		predator.add(ca);
 
 		ca_.setEnergy(150);
 	}
@@ -723,7 +721,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	// restart
 	public void resetCheck() {
 		
-		if ((creature.size() == 0 || carnivore.size() == 0) && pl==0){
+		if ((prey.size() == 0 || predator.size() == 0) && pl==0){
 			
 			x = new double[arrayx.size()];
 			y = new double[arrayy.size()];
@@ -746,7 +744,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			frame.setVisible(true);
 		}
 		
-		if (creature.size() == 0 && carnivore.size() == 0) {
+		if (prey.size() == 0 && predator.size() == 0) {
 			init();
 		}
 	}
@@ -774,7 +772,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		clickY = e.getY();
 		checkButton(e);
 		if (mouseButton == 1) {
-			Creature c = new Creature();
+			Prey c = new Prey();
 			// set up variables
 			c.setX(clickX);
 			c.setY(clickY - 32);
@@ -782,12 +780,12 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			c.setSpeed(1);
 			c.setSi(width);
 			c.setEnergy(150);
-			creature.add(c);
+			prey.add(c);
 		} else if (mouseButton == 2) {
-			creature.clear();
-			carnivore.clear();
+			prey.clear();
+			predator.clear();
 		} else if (mouseButton == 3) {
-			Carnivore ca = new Carnivore();
+			Predator ca = new Predator();
 			// set up variables
 			ca.setX(clickX);
 			ca.setY(clickY - 32);
@@ -798,7 +796,7 @@ public class Life extends JFrame implements Runnable, MouseListener,
 			ca.setSight(1);
 			ca.setSi(20);
 			ca.setDebug(true);
-			carnivore.add(ca);
+			predator.add(ca);
 		}
 	}
 
@@ -858,8 +856,8 @@ public class Life extends JFrame implements Runnable, MouseListener,
 	
 	//boids 
 	
-	public ArrayList<Creature> neighborhood(Creature i){
-		ArrayList<Creature> creatureset = new ArrayList<Creature>();
+	public ArrayList<Prey> neighborhood(Prey i){
+		ArrayList<Prey> creatureset = new ArrayList<Prey>();
 		
 		
 		double x = i.getX();
@@ -867,11 +865,11 @@ public class Life extends JFrame implements Runnable, MouseListener,
 		double si = i.getSight();
 		double ref = Math.floor(2*si);
 		
-		for(int a=0; a<creature.size(); a++){
-			double z = creature.get(a).getX();
-			double zy = creature.get(a).getY();
+		for(int a=0; a<prey.size(); a++){
+			double z = prey.get(a).getX();
+			double zy = prey.get(a).getY();
 			if((z>x-ref && z<x+ref) || (zy>y-ref && zy<y+ref)){
-				if (z!=x && zy!=y) creatureset.add(creature.get(a));
+				if (z!=x && zy!=y) creatureset.add(prey.get(a));
 			}
 		}
 		

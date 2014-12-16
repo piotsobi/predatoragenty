@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 
-public class Carnivore extends Creature {
+public class Predator extends Prey {
 	
 	private int xRef;
 	private int yRef;
@@ -24,7 +24,7 @@ public class Carnivore extends Creature {
 	public void setSightRadius(Ellipse2D sightRadius) {this.sightRadius = sightRadius;}
 
 	
-	Carnivore() {
+	Predator() {
 		setColor(Color.RED);
 		setXRef(1);
 		setYRef(1);

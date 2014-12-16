@@ -2,7 +2,7 @@ package pPagent;
 
 import java.awt.Shape;
 
-public class BaseVectorShape {
+public class BaseModel {
 
 
 	private Shape shape;
@@ -51,7 +51,7 @@ public class BaseVectorShape {
 	public void setMoveAngle(double angle) {this.moveAngle = angle;}
 	public void	incMoveAngle(double i) {this.moveAngle += i;}
 
-	BaseVectorShape() {
+	BaseModel() {
 		setShape(null);
 		setAlive(false);
 		setDebug(false);

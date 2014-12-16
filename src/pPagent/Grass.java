@@ -4,7 +4,7 @@ package pPagent;
 import java.awt.Rectangle;
 
 
-public class Grass extends BaseVectorShape {
+public class Grass extends BaseModel {
 
 	
 	public Rectangle getBounds() {
