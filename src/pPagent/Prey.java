@@ -21,13 +21,13 @@ public class Prey extends BaseModel {
 	public void setCrY(int[] crY) {this.crY = crY;}
 
 	//zas widzenia polowanie
-	private double sight;
+	private double killing;
 	private double si;
-	public double getSight() {return sight;}
+	public double getKilling() {return killing;}
 	public double getSi() {return si;}
-	public void setSight(double sight) {this.sight = sight;}
+	public void setKilling(double sight) {this.killing = sight;}
 	public void setSi(double si) {this.si = si;}
-	public void incSight(double sight) {this.sight += sight;}
+	public void incSight(double sight) {this.killing += sight;}
 	public void incSi(double si) {this.si += si;}
 
 	
@@ -73,7 +73,7 @@ public class Prey extends BaseModel {
 		setShape(new Polygon(crX, crY, crX.length));
 		setRotationVelocity(0.0);
 		
-		setSight(1);
+		setKilling(1);
 		setSi(2);
 		setXRef(1);
 		setYRef(1);
