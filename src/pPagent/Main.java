@@ -406,7 +406,7 @@ public class Main extends JFrame implements Runnable,
 		for (int i = 0; i < predator.size(); i++) {
 			Predator ca = predator.get(i);
 			// nie zawsze poluje
-			if (rand.nextInt(8) <= 2) {
+			if (rand.nextInt(6) <= 2) {
 				double best = ca.getSi();
 				int otherwise = 0;
 				for (int j = 0; j < prey.size(); j++) {
